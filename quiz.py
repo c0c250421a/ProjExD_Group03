@@ -89,6 +89,7 @@ class QuizGame:
         self.choice_font = pygame.font.Font(font_path, 30)
         self.result_font = pygame.font.Font(font_path, 36)
         self.guide_font = pygame.font.Font(font_path, 24)
+        self.timer_font = pygame.font.Font(font_path, 36) #　タイマー用のフォントの追加
 
         # 色
         self.WHITE = (255, 255, 255)
@@ -104,6 +105,11 @@ class QuizGame:
         self.score = 0
         self.total_questions = 0
         self.quiz_queue = []
+
+        #　タイマー用の変数
+        self.LIMIT_TIME = 10.0
+        self.start_time = 0
+        self.remaining_time = self.LIMIT_TIME
 
         # 問題
         self.quizzes = [
@@ -171,6 +177,8 @@ class QuizGame:
         self.total_questions = len(self.quiz_queue)
         
         self.state = "PLAY"
+        
+
         self.next_quiz()
 
     def use_fifty(self):
@@ -205,6 +213,28 @@ class QuizGame:
         self.selected_choice = None
 
         self.fifty = None
+        self.start_time = pygame.time.get_ticks() #　出題したときの時間を記録
+
+    # --------------------------
+    # タイマー更新・判定
+    # --------------------------
+    def update_timer(self):
+        """
+        未回答の場合に経過時間を計算してカウントダウンし、タイムアップを判定するメソッド
+        引数：なし
+        戻り値：なし
+        """
+        if not self.answered:
+            elapsed_seconds = (pygame.time.get_ticks() - self.start_time) / 1000
+            self.remaining_time = max(0.0, self.LIMIT_TIME - elapsed_seconds)
+
+            #　タイムアップ判定
+            if self.remaining_time <= 0:
+                self.answered = True
+                answer = self.current_quiz.choices[self.current_quiz.answer]
+                self.message = f"タイムアップ！　正解は「{answer}」"
+        else:
+            self.remaining_time = 0.0
 
     # --------------------------
     # 描画
@@ -222,13 +252,49 @@ class QuizGame:
             self.screen.blit(title, (self.WIDTH // 2 - title.get_width() // 2, 180))
             self.start_button.draw(self.screen, self.choice_font, "スタート", self.GRAY)
 
+# <<<<<<< HEAD
         elif self.state == "PLAY":
             question = self.question_font.render(
                 self.current_quiz.question,
                 True,
                 self.BLACK
+# =======
+        # self.screen.blit(question, (40, 50))
+
+        # #　タイマー表示(問題の上に表示。残り3秒になると文字が赤くなる)
+        # timer_color = self.RED if self.remaining_time <= 3.0 else self.BLACK
+        # timer_text = self.timer_font.render(
+        #     f"残り時間：{self.remaining_time:.1f}秒",
+        #     True,
+        #     timer_color
+        # )
+        # self.screen.blit(timer_text, (40,10))
+
+        # for i in range(4):
+
+        #     color = self.GRAY
+
+        #     if self.answered and i == self.current_quiz.answer:
+        #         color = self.GREEN
+
+        #     self.buttons[i].draw(
+        #         self.screen,
+        #         self.choice_font,
+        #         self.current_quiz.choices[i],
+        #         color
+# >>>>>>> C0C25046/timer
             )
             self.screen.blit(question, (40, 50))
+
+            #　タイマー表示(問題の上に表示。残り3秒になると文字が赤くなる)
+            timer_color = self.RED if self.remaining_time <= 3.0 else self.BLACK
+            timer_text = self.timer_font.render(
+                f"残り時間：{self.remaining_time:.1f}秒",
+                True,
+                timer_color
+            )
+
+            self.screen.blit(timer_text, (40,10))
 
             for i in range(4):
                 color = self.GRAY
@@ -341,6 +407,9 @@ class QuizGame:
         clock = pygame.time.Clock()
         while True:
             self.event()
+
+            self.update_timer() #　更新・判定をする
+    
             self.draw()
             clock.tick(60)
 
