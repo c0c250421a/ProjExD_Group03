@@ -192,7 +192,7 @@ class QuizGame:
             ),
 
             Quiz(
-                "クレアチンを構成する3つのアミノ酸ではないものは?",
+                "クレアチンを構成するアミノ酸でないのは?",
                 ["バリン","アルギニン","グリシン","メチオニン"],
                 0
             ),
@@ -338,37 +338,12 @@ class QuizGame:
             self.screen.blit(title, (self.WIDTH // 2 - title.get_width() // 2, 180))
             self.start_button.draw(self.screen, self.choice_font, "スタート", self.GRAY)
 
-# <<<<<<< HEAD
+
         elif self.state == "PLAY":
             question = self.question_font.render(
                 self.current_quiz.question,
                 True,
                 self.BLACK
-# =======
-        # self.screen.blit(question, (40, 50))
-
-        # #　タイマー表示(問題の上に表示。残り3秒になると文字が赤くなる)
-        # timer_color = self.RED if self.remaining_time <= 3.0 else self.BLACK
-        # timer_text = self.timer_font.render(
-        #     f"残り時間：{self.remaining_time:.1f}秒",
-        #     True,
-        #     timer_color
-        # )
-        # self.screen.blit(timer_text, (40,10))
-
-        # for i in range(4):
-
-        #     color = self.GRAY
-
-        #     if self.answered and i == self.current_quiz.answer:
-        #         color = self.GREEN
-
-        #     self.buttons[i].draw(
-        #         self.screen,
-        #         self.choice_font,
-        #         self.current_quiz.choices[i],
-        #         color
-# >>>>>>> C0C25046/timer
             )
             self.screen.blit(question, (40, 50))
 
